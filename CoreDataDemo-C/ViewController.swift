@@ -17,6 +17,7 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         self.addProduct(name: "iPhone 6s 16GB", price: 24500)
+        self.showProducts()
     }
 
     override func didReceiveMemoryWarning() {
@@ -53,6 +54,28 @@ class ViewController: UIViewController {
             
         }
 
+    }
+
+    // Retrieve Data Function
+    func showProducts() {
+        //create a fetch request, telling it about the entity
+        let fetchRequest: NSFetchRequest<Product> = Product.fetchRequest()
+        
+        do {
+            //go get the results
+            let searchResults = try getContext().fetch(fetchRequest)
+            
+            //check the size of the returned results
+            print ("num of results = \(searchResults.count)")
+            
+            //Convert to NSManagedObject to use 'for' loops
+            for result in searchResults as [NSManagedObject] {
+                //get the Key Value pairs (although there may be a better way to do that...
+                print("Product Name: \(result.value(forKey: "name")), Price: \(result.value(forKey: "price"))")
+            }
+        } catch {
+            print("Error with request: \(error)")
+        }
     }
 
 }

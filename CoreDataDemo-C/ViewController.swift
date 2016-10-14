@@ -16,8 +16,9 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        self.addProduct(name: "iPhone 6s 16GB", price: 24500)
+        //self.addProduct(name: "iPhone 6s 16GB", price: 24500)
         self.showProducts()
+        self.cleanUpProducts()
     }
 
     override func didReceiveMemoryWarning() {
@@ -75,6 +76,38 @@ class ViewController: UIViewController {
             }
         } catch {
             print("Error with request: \(error)")
+        }
+    }
+    
+    // Clean Data Fucntion
+    func cleanUpProducts() {
+        //create a fetch request, telling it about the entity
+        let fetchRequest: NSFetchRequest<Product> = Product.fetchRequest()
+        
+        // Context
+        let context = getContext()
+        
+        do {
+            //go get the results
+            let searchResults = try getContext().fetch(fetchRequest)
+            
+            //check the size of the returned results
+            print ("num of results = \(searchResults.count)")
+            
+            //Convert to NSManagedObject to use 'for' loops
+            for result in searchResults as [NSManagedObject] {
+                context.delete(result)
+                print("Deleted")
+
+                do{
+                    try context.save()
+                    print("saved!")
+                } catch let error as NSError  {
+                print("Could not save \(error), \(error.userInfo)")
+                }
+            }
+        }catch{
+            fatalError("Failed to fetch data: \(error)")
         }
     }
 
